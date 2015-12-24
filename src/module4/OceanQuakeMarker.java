@@ -30,6 +30,9 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		// and how it is set in the EarthquakeMarker constructor
 		
 		// TODO: Implement this method
+		//pg.fill(255, 255, 255);
+		//pg.rect(x, y, 10, 10);
+		pg.rect(x-radius, y-radius, 2*radius, 2*radius);
 		
 	}
 	

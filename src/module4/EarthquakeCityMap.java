@@ -1,6 +1,7 @@
 package module4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
@@ -35,7 +36,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true; // false
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -65,22 +66,22 @@ public class EarthquakeCityMap extends PApplet {
 		size(900, 700, OPENGL);
 		if (offline) {
 		    map = new UnfoldingMap(this, 200, 50, 650, 600, new MBTilesMapProvider(mbTilesString));
-		    earthquakesURL = "2.5_week.atom";  // The same feed, but saved August 7, 2015
+		    //earthquakesURL = "2.5_week.atom";  // The same feed, but saved August 7, 2015
 		}
 		else {
 			map = new UnfoldingMap(this, 200, 50, 650, 600, new Google.GoogleMapProvider());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
-		    //earthquakesURL = "2.5_week.atom";
+		    //earthquakesURL = "2.5_week.atom"; //
 		}
 		MapUtils.createDefaultEventDispatcher(this, map);
 		
 		// FOR TESTING: Set earthquakesURL to be one of the testing files by uncommenting
 		// one of the lines below.  This will work whether you are online or offline
-		//earthquakesURL = "test1.atom";
+		//earthquakesURL = "test1.atom"; // 
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		//earthquakesURL = "quiz1.atom";
+		earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -103,6 +104,7 @@ public class EarthquakeCityMap extends PApplet {
 		  //check if LandQuake
 		  if(isLand(feature)) {
 		    quakeMarkers.add(new LandQuakeMarker(feature));
+		   
 		  }
 		  // OceanQuakes
 		  else {
@@ -166,6 +168,16 @@ public class EarthquakeCityMap extends PApplet {
 		
 		// TODO: Implement this method using the helper method isInCountry
 		
+		for (Marker country : countryMarkers)
+		{
+			// earthquake inside country
+			if (isInCountry(earthquake, country))
+			{
+				//System.out.println(country.getProperties());
+				return true;
+			}
+		}
+		
 		// not inside any country
 		return false;
 	}
@@ -176,9 +188,96 @@ public class EarthquakeCityMap extends PApplet {
 	// the quakes to count how many occurred in that country.
 	// Recall that the country markers have a "name" property, 
 	// And LandQuakeMarkers have a "country" property set.
+
 	private void printQuakes() 
 	{
-		// TODO: Implement this method
+		// get total number of earthquakes in the RSS feed
+		int totalWaterQuakes = quakeMarkers.size();
+		
+		int totalEarthQuakes = quakeMarkers.size();
+		
+		
+		// count when earthquake occured
+		int totalPastDay = 0;
+		int totalPastWeek = 0;
+		int totalPastHour = 0;
+		
+		// as long country is in countryMarker list
+		for (Marker country : countryMarkers) 
+		{
+			
+			// get country name of country
+			String countryName = country.getStringProperty("name");
+			//System.out.println("countryName :" + countryName);
+			//System.out.println("country.getStringProperty(age):" + country.getStringProperty("age"));
+			
+			// assignment earthquake counter
+			int numQuakes = 0;
+			// count when earthquake occured
+			int numPastDay = 0;
+			int numPastWeek = 0;
+			int numPastHour = 0;
+			
+			// as long as marker is in quakeMarker list
+			for (Marker marker : quakeMarkers)
+			{
+				//System.out.println("marker properties age: " + marker.getStringProperty("age"));
+				String pastDay = "Past Day";
+				String pastWeek = "Past Week";
+				String pastHour = "Past Hour";
+				
+				//System.out.println("eqOccurrence: " + eqOccurrence);
+				
+				if(pastDay.equals(marker.getStringProperty("age")))
+				{
+					
+					numPastDay++;
+					//System.out.println("pastDay: " + numPastDay);
+				}
+				else if(pastWeek.equals(marker.getStringProperty("age")))
+				{
+					numPastWeek++;
+					//System.out.println("pastWeek: " + numPastWeek);
+				}
+				else if(pastHour.equals(marker.getStringProperty("age")))
+				{
+					numPastHour++;
+					//System.out.println("pastHour: " + numPastHour);
+				}
+				EarthquakeMarker eqMarker = (EarthquakeMarker)marker;
+				//System.out.println("eqMarker: " + eqMarker);
+				
+				// if earthquake is on land then
+				if (eqMarker.isOnLand()) 
+				{
+					if (countryName.equals(eqMarker.getStringProperty("country"))) {
+						// count earthquake
+						numQuakes++;
+						//System.out.println("numQuakes: " + numQuakes);
+					}
+				}
+			} // end of second for loop
+			
+			if (numQuakes > 0) {
+				totalWaterQuakes -= numQuakes;
+				System.out.println(countryName + ": " + numQuakes);
+				// enhancement
+				
+				totalPastDay = totalEarthQuakes - (numPastWeek + numPastHour);
+				totalPastWeek = totalEarthQuakes - (numPastDay + numPastHour);
+				totalPastHour = totalEarthQuakes - (numPastDay + numPastWeek);
+				
+			}
+			
+		} // end of first for loop
+		
+		System.out.println("totalEarthQuakes :" + totalEarthQuakes);
+		System.out.println("OCEAN QUAKES: " + totalWaterQuakes);
+		// out of scope?? System.out.println("Occured past day: " + pastDay);
+		System.out.println("Occured past day: " + totalPastDay);
+		System.out.println("Occured past week: " + totalPastWeek);
+		System.out.println("Occured past hour: " + totalPastHour);
+		
 	}
 	
 	

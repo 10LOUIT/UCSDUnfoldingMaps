@@ -33,6 +33,28 @@ public class LandQuakeMarker extends EarthquakeMarker {
 		// and how it is set in the EarthquakeMarker constructor
 		
 		// TODO: Implement this method
+
+		pg.ellipse(x, y, 2*radius, 2*radius);
+//		float depth = getDepth();
+//		int size = 1;
+//		if (depth < THRESHOLD_INTERMEDIATE) {
+//			//pg.fill(255, 255, 0);
+//			//pg.strokeWeight(1);
+//			size = 10;
+//			pg.ellipse(x, y, size, size);
+//		}
+//		else if (depth < THRESHOLD_DEEP) {
+//			//pg.fill(0, 0, 255);
+//			//pg.strokeWeight(1);
+//			size = 15;
+//			pg.ellipse(x, y, size, size);
+//		}
+//		else { // shallow
+//			//pg.fill(255, 0, 0);
+//			//pg.strokeWeight(1);
+//			size = 5;
+//			pg.ellipse(x, y, size, size);
+//		}
 		
 	}
 	
