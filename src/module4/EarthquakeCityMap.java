@@ -1,7 +1,6 @@
 package module4;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
